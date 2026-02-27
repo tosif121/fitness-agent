@@ -4,8 +4,6 @@ import { NextResponse } from 'next/server';
 const apiKey = process.env.STREAM_API_KEY!;
 const apiSecret = process.env.STREAM_API_SECRET!;
 
-const client = new StreamClient(apiKey, apiSecret);
-
 export async function POST(req: Request) {
   try {
     const { userId } = await req.json();
@@ -14,6 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
+    const client = new StreamClient(apiKey, apiSecret);
     const token = client.generateUserToken({ user_id: userId });
 
     return NextResponse.json({ token });

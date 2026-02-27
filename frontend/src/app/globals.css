@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
+  /* ── Colors ── */
   --color-neon: #00ff87;
   --color-neon-dim: rgba(0, 255, 135, 0.15);
   --color-red: #ff3b5c;
@@ -12,19 +14,26 @@
   --color-text-bright: #f0f0f0;
   --color-text-dim: rgba(240, 240, 240, 0.4);
 
+  /* ── Fonts ── */
   --font-display: 'Bebas Neue', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-body: 'Inter', sans-serif;
+  --font-body: var(--font-jost-sans), 'Inter', sans-serif;
 
+  /* ── Animations (available as animate-* utilities) ── */
   --animate-rep-pulse: repPulse 0.4s ease;
   --animate-scan-line: scanLine 4s linear infinite;
   --animate-fade-slide-up: fadeSlideUp 0.3s ease;
+  --animate-fade-up: fadeUp 0.6s ease both;
   --animate-skeleton-draw: skeletonDraw 0.4s ease forwards;
   --animate-glow-pulse: glowPulse 3s ease infinite;
   --animate-error-feed-in: errorFeedIn 0.3s ease;
   --animate-blink: blink 2s ease infinite;
   --animate-blink-fast: blink 1.5s infinite;
+  --animate-spin: spin 0.6s linear infinite;
+  --animate-float: float 3s ease infinite;
+  --animate-grid-fade: gridFade 8s ease infinite;
 
+  /* ── Keyframes ── */
   @keyframes repPulse {
     0% {
       transform: scale(1);
@@ -65,6 +74,16 @@
       transform: translateY(0) translateX(-50%);
     }
   }
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   @keyframes skeletonDraw {
     from {
       stroke-dashoffset: 200;
@@ -92,8 +111,32 @@
       transform: translateX(0);
     }
   }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes gridFade {
+    0%,
+    100% {
+      opacity: 0.03;
+    }
+    50% {
+      opacity: 0.06;
+    }
+  }
 }
 
+/* ── Base ── */
 body {
   background-color: var(--color-bg);
   color: var(--color-text-bright);
@@ -107,4 +150,25 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* ── Stream Video SDK Overrides ── */
+.str-video {
+  --str-video__background-color: var(--color-bg) !important;
+  --str-video__text-color: var(--color-text-bright) !important;
+  --str-video__primary-color: var(--color-neon) !important;
+}
+.str-video__speaker-layout {
+  background: transparent !important;
+}
+.str-video__participant-view {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+.str-video__call-controls {
+  background: var(--color-bg2) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+.str-video__call-controls__button {
+  color: var(--color-text-bright) !important;
 }

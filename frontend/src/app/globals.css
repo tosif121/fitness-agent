@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-neon: #00ff87;
+  --color-neon-dim: rgba(0, 255, 135, 0.15);
+  --color-red: #ff3b5c;
+  --color-yellow: #ffd60a;
+  --color-bg: #0a0a0a;
+  --color-bg2: #111111;
+  --color-bg3: #1a1a1a;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-bright: #f0f0f0;
+  --color-text-dim: rgba(240, 240, 240, 0.4);
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Inter', sans-serif;
+
+  --animate-rep-pulse: repPulse 0.4s ease;
+  --animate-scan-line: scanLine 4s linear infinite;
+  --animate-fade-slide-up: fadeSlideUp 0.3s ease;
+  --animate-skeleton-draw: skeletonDraw 0.4s ease forwards;
+  --animate-glow-pulse: glowPulse 3s ease infinite;
+  --animate-error-feed-in: errorFeedIn 0.3s ease;
+  --animate-blink: blink 2s ease infinite;
+  --animate-blink-fast: blink 1.5s infinite;
+
+  @keyframes repPulse {
+    0% {
+      transform: scale(1);
+    }
+    30% {
+      transform: scale(1.35);
+      color: var(--color-neon);
+      text-shadow: 0 0 20px rgba(0, 255, 135, 0.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes scanLine {
+    0% {
+      top: -2px;
+    }
+    100% {
+      top: 100%;
+    }
+  }
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px) translateX(-50%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) translateX(-50%);
+    }
+  }
+  @keyframes skeletonDraw {
+    from {
+      stroke-dashoffset: 200;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes glowPulse {
+    0%,
+    100% {
+      box-shadow: 0 0 12px rgba(0, 255, 135, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 28px rgba(0, 255, 135, 0.7);
+    }
+  }
+  @keyframes errorFeedIn {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-bright);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}

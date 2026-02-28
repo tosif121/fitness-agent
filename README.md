@@ -20,12 +20,13 @@
 
 ## 🔗 Links
 
-| Resource       | Link                                                                           |
-| -------------- | ------------------------------------------------------------------------------ |
-| 🐙 GitHub Repo | [github.com/YOUR_USERNAME/fitagent](https://github.com/YOUR_USERNAME/fitagent) |
-| 🎥 Demo Video  | [youtube.com/watch?v=YOUR_ID](https://youtube.com/YOUR_DEMO_LINK)              |
-| 🌐 Live Demo   | [fitagent.vercel.app](https://fitagent.vercel.app) _(optional)_                |
-| 🐦 Twitter/X   | [@YOUR_HANDLE](https://x.com/YOUR_HANDLE)                                      |
+| Resource       | Link                                                                                                                              |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 🐙 GitHub Repo | [github.com/YOUR_USERNAME/fitagent](https://github.com/YOUR_USERNAME/fitagent)                                                    |
+| 🎥 Demo Video  | [youtube.com/watch?v=YOUR_ID](https://youtube.com/YOUR_DEMO_LINK)                                                                 |
+| 📝 Blog Post   | [Hashnode Article](https://tossi.hashnode.dev/building-fitagent-a-real-time-ai-personal-trainer-with-stream-vision-agents-gemini) |
+| 🌐 Live Demo   | [fitagent.vercel.app](https://fitagent.vercel.app) _(optional)_                                                                   |
+| 🐦 Twitter/X   | [@YOUR_HANDLE](https://x.com/YOUR_HANDLE)                                                                                         |
 
 ---
 

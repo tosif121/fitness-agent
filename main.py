@@ -2,6 +2,7 @@ import logging
 import asyncio
 import json
 import threading
+import av
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from dotenv import load_dotenv
 from vision_agents.core import User, Agent, AgentLauncher, Runner
@@ -161,6 +162,86 @@ def start_rep_server():
 
 
 # ─────────────────────────────────────────────
+# Real-Time Deterministic Rep Counter
+# (Subclasses YOLOPoseProcessor to run Python logic)
+# ─────────────────────────────────────────────
+class DeterministicFitnessProcessor(ultralytics.YOLOPoseProcessor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # States for specific exercises
+        self.squat_state = "UP"
+        self.jack_state = "DOWN"
+        self.pushup_state = "UP"
+
+    async def add_pose_to_frame(self, frame):
+        try:
+            frame_array = frame.to_ndarray(format="rgb24")
+            array_with_pose, pose_data = await self.add_pose_to_ndarray(frame_array)
+            
+            # Run deterministic rep logic!
+            if pose_data and "persons" in pose_data and pose_data["persons"]:
+                # Grab first person
+                kpts = pose_data["persons"][0]["keypoints"]
+                
+                # YOLO COCO 17 keypoints:
+                # 0:Nose, 5,6:Shoulder, 9,10:Wrist, 11,12:Hip, 13,14:Knee, 15,16:Ankle
+                if len(kpts) >= 17:
+                    try:
+                        nose = kpts[0]
+                        l_shoulder, r_shoulder = kpts[5], kpts[6]
+                        l_wrist, r_wrist = kpts[9], kpts[10]
+                        l_hip, r_hip = kpts[11], kpts[12]
+                        l_knee, r_knee = kpts[13], kpts[14]
+
+                        # Averaged Y positions (lower Y = higher on screen)
+                        avg_hip_y = (l_hip[1] + r_hip[1]) / 2 if l_hip[2]>0.5 and r_hip[2]>0.5 else None
+                        avg_knee_y = (l_knee[1] + r_knee[1]) / 2 if l_knee[2]>0.5 and r_knee[2]>0.5 else None
+                        avg_wrist_y = (l_wrist[1] + r_wrist[1]) / 2 if l_wrist[2]>0.5 and r_wrist[2]>0.5 else None
+                        avg_shoulder_y = (l_shoulder[1] + r_shoulder[1]) / 2 if l_shoulder[2]>0.5 and r_shoulder[2]>0.5 else None
+
+                        # --- DETECT SQUATS ---
+                        if avg_hip_y and avg_knee_y:
+                            # If hips go close to or below knees
+                            if avg_hip_y > avg_knee_y - 30: 
+                                self.squat_state = "DOWN"
+                            # If hips go way above knees (standing)
+                            elif avg_hip_y < avg_knee_y - 120 and self.squat_state == "DOWN":
+                                self.squat_state = "UP"
+                                count_rep("squats", "good", "Great depth on that squat!")
+
+                        # --- DETECT JUMPING JACKS ---
+                        if avg_wrist_y and nose[2]>0.5:
+                            # Wrists go above nose
+                            if avg_wrist_y < nose[1]:
+                                self.jack_state = "UP"
+                            # Wrists go down near hips
+                            elif avg_hip_y and avg_wrist_y > avg_hip_y - 50 and self.jack_state == "UP":
+                                self.jack_state = "DOWN"
+                                count_rep("jumping_jacks", "good", "Awesome jumping jack!")
+
+                        # --- DETECT PUSH-UPS ---
+                        # In a pushup, shoulders drop severely relative to wrists (if camera is grounded)
+                        if avg_shoulder_y and avg_wrist_y:
+                            # Shoulders go down (close to wrists)
+                            if abs(avg_shoulder_y - avg_wrist_y) < 60:
+                                self.pushup_state = "DOWN"
+                            # Shoulders go up (arms extended)
+                            elif abs(avg_shoulder_y - avg_wrist_y) > 150 and self.pushup_state == "DOWN":
+                                self.pushup_state = "UP"
+                                count_rep("push_ups", "good", "Perfect push-up!")
+                    except Exception as e:
+                        logger.error(f"Heuristic error: {e}")
+
+            frame_with_pose = av.VideoFrame.from_ndarray(array_with_pose)
+            frame_with_pose.pts = frame.pts
+            frame_with_pose.time_base = frame.time_base
+            return frame_with_pose
+        except Exception as e:
+            logger.exception("add_pose_to_frame failed")
+            return None
+
+
+# ─────────────────────────────────────────────
 # Create Agent
 # ─────────────────────────────────────────────
 async def create_agent(**kwargs) -> Agent:
@@ -191,7 +272,7 @@ async def create_agent(**kwargs) -> Agent:
 
         # Vision pipeline: YOLO detects keypoints
         processors=[
-            ultralytics.YOLOPoseProcessor(
+            DeterministicFitnessProcessor(
                 model_path="yolo11n-pose.pt",
                 device="cpu",
             ),

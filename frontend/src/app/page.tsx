@@ -409,19 +409,23 @@ function ExerciseSelector({
   selectedExercises,
   activeExerciseId,
   trackers,
+  isSelectionApplied,
+  onApplySelection,
   onToggleExercise,
   onSetActive,
 }: {
   selectedExercises: string[];
   activeExerciseId: string | null;
   trackers: Map<string, ExerciseTracker>;
+  isSelectionApplied: boolean;
+  onApplySelection: () => void;
   onToggleExercise: (id: string) => void;
   onSetActive: (id: string) => void;
 }) {
   return (
-    <div className="rounded-xl p-4 bg-bg2 border border-border">
+    <div className="rounded-xl p-4 bg-bg2 border border-border flex flex-col">
       <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-text-dim">SELECT EXERCISES</p>
-      <div className="flex flex-col gap-1.5 max-h-[240px] overflow-y-auto">
+      <div className="flex flex-col gap-1.5 max-h-[240px] overflow-y-auto mb-4">
         {EXERCISE_CATALOG.map((ex) => {
           const isSelected = selectedExercises.includes(ex.id);
           const isActive = activeExerciseId === ex.id;
@@ -469,6 +473,30 @@ function ExerciseSelector({
             </div>
           );
         })}
+      </div>
+
+      {/* Applied mode indicator / Apply button */}
+      <div>
+        {selectedExercises.length > 0 ? (
+          isSelectionApplied ? (
+            <div className="w-full rounded p-2.5 text-center text-[10px] font-mono border border-neon/50 text-neon bg-neon/10 leading-relaxed uppercase">
+              ✅ Applied <br />
+              <span className="text-neon/80 text-[9px]">Only Auto-Detecting Selected</span>
+            </div>
+          ) : (
+            <button
+              onClick={onApplySelection}
+              className="w-full rounded bg-neon/20 border border-neon text-neon font-bold text-[11px] font-mono tracking-widest py-2.5 hover:bg-neon hover:text-black transition-colors"
+            >
+              APPLY SELECTION
+            </button>
+          )
+        ) : (
+          <div className="w-full rounded p-2.5 text-center text-[10px] font-mono border border-border text-text-dim bg-bg3 leading-relaxed uppercase">
+            Default Mode <br />
+            <span className="text-text-dim/60 text-[9px]">Auto-Detecting ALL</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -566,6 +594,8 @@ function WorkoutView({
   countdownExercise,
   onCountdownComplete,
   onCountdownCancel,
+  isSelectionApplied,
+  onApplySelection,
 }: {
   agentState: AgentState;
   feedback: string;
@@ -584,6 +614,8 @@ function WorkoutView({
   countdownExercise: ExerciseInfo | null;
   onCountdownComplete: () => void;
   onCountdownCancel: () => void;
+  isSelectionApplied: boolean;
+  onApplySelection: () => void;
 }) {
   const activeTracker = activeExerciseId ? trackers.get(activeExerciseId) : null;
 
@@ -711,6 +743,8 @@ function WorkoutView({
             selectedExercises={selectedExercises}
             activeExerciseId={activeExerciseId}
             trackers={trackers}
+            isSelectionApplied={isSelectionApplied}
+            onApplySelection={onApplySelection}
             onToggleExercise={onToggleExercise}
             onSetActive={onSetActiveExercise}
           />
@@ -827,6 +861,7 @@ export default function App() {
   const [trackers, setTrackers] = useState<Map<string, ExerciseTracker>>(new Map());
   const [countdownExercise, setCountdownExercise] = useState<ExerciseInfo | null>(null);
   const [pendingExerciseId, setPendingExerciseId] = useState<string | null>(null);
+  const [isSelectionApplied, setIsSelectionApplied] = useState(false);
 
   const showFeedback = useCallback((msg: string) => {
     setFeedback(msg);
@@ -843,6 +878,7 @@ export default function App() {
     setAgentState('idle');
     setCountdownExercise(null);
     setPendingExerciseId(null);
+    setIsSelectionApplied(false);
     setFeedback('');
     setCallId('');
     setSessionStart(0);
@@ -859,7 +895,9 @@ export default function App() {
             return next;
           });
           if (activeExerciseId === exerciseId) setActiveExerciseId(null);
-          return prev.filter((id) => id !== exerciseId);
+          const newPrev = prev.filter((id) => id !== exerciseId);
+          if (newPrev.length === 0) setIsSelectionApplied(false);
+          return newPrev;
         }
         // Select: create tracker
         const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId)!;
@@ -1128,6 +1166,11 @@ export default function App() {
               }
             } else if (data.reps > 0 || data.sets > 1) {
               // Auto-detect: if AI detects an exercise we never selected!
+              if (isSelectionApplied) {
+                // If the user locked their selections, ignore unselected exercises!
+                return prev;
+              }
+
               const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId);
               if (info) {
                 next.set(exerciseId, {
@@ -1162,7 +1205,7 @@ export default function App() {
       mounted = false;
       clearInterval(intervalId);
     };
-  }, [agentState, callId, showFeedback]);
+  }, [agentState, callId, showFeedback, isSelectionApplied]);
 
   useEffect(
     () => () => {
@@ -1210,6 +1253,8 @@ export default function App() {
           countdownExercise={countdownExercise}
           onCountdownComplete={handleCountdownComplete}
           onCountdownCancel={handleCountdownCancel}
+          isSelectionApplied={isSelectionApplied}
+          onApplySelection={() => setIsSelectionApplied(true)}
         />
       </StreamCall>
     </StreamVideo>

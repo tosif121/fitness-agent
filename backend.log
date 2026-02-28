@@ -1,0 +1,18 @@
+objc[32723]: Class AVFFrameReceiver is implemented in both /Users/tosif/Desktop/fitness-agent/.venv/lib/python3.12/site-packages/av/.dylibs/libavdevice.61.3.100.dylib (0x1019583a8) and /Users/tosif/Desktop/fitness-agent/.venv/lib/python3.12/site-packages/cv2/.dylibs/libavdevice.61.3.100.dylib (0x10ddb03a8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[32723]: Class AVFAudioReceiver is implemented in both /Users/tosif/Desktop/fitness-agent/.venv/lib/python3.12/site-packages/av/.dylibs/libavdevice.61.3.100.dylib (0x1019583f8) and /Users/tosif/Desktop/fitness-agent/.venv/lib/python3.12/site-packages/cv2/.dylibs/libavdevice.61.3.100.dylib (0x10ddb03f8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+INFO:__main__:📊 Rep data server running on http://localhost:8001
+[97m20:00:47.850 | INFO     | Started server process [32723][0m
+[97m20:00:47.850 | INFO     | Waiting for application startup.[0m
+[97m20:00:47.850 | INFO     | Creating agent...[0m
+INFO:__main__:🏋️  Initializing FitAgent...
+[97m20:00:49.609 | INFO     | ✅ YOLO pose model loaded: yolo11n-pose.pt on cpu[0m
+[97m20:00:49.613 | INFO     | 🤖 YOLO Pose Processor initialized with model: yolo11n-pose.pt[0m
+[97m20:00:49.613 | INFO     | Reading instructions from file /Users/tosif/Desktop/fitness-agent/fitness_coach.md[0m
+[97m20:00:49.613 | INFO     | [Agent: fitagent] | 🎥 Video track initialized from video publisher[0m
+INFO:__main__:✅ FitAgent ready with rep counting tools!
+[97m20:00:49.613 | INFO     | Warming up agent components...[0m
+[97m20:00:49.679 | INFO     | Agent warmup completed[0m
+[97m20:00:49.679 | INFO     | [Agent: fitagent] | 🤖 Stopping the agent[0m
+[97m20:00:49.679 | INFO     | [Agent: fitagent] | 🤖 Agent stopped[0m
+[97m20:00:49.679 | INFO     | Application startup complete.[0m
+[97m20:00:49.679 | INFO     | Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)[0m

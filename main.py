@@ -2,11 +2,11 @@ import logging
 import asyncio
 import json
 import threading
-import av
+import av  # type: ignore
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from dotenv import load_dotenv
-from vision_agents.core import User, Agent, AgentLauncher, Runner
-from vision_agents.plugins import gemini, getstream, ultralytics
+from dotenv import load_dotenv  # type: ignore
+from vision_agents.core import User, Agent, AgentLauncher, Runner  # type: ignore
+from vision_agents.plugins import gemini, getstream, ultralytics  # type: ignore
 
 # ─────────────────────────────────────────────
 # Load environment variables from .env
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # Prevents Gemini memory overflow by tracking
 # and cleaning up sessions properly
 # ─────────────────────────────────────────────
-active_sessions: dict[str, asyncio.Task] = {}
+active_sessions: dict[str, asyncio.Task | None] = {}
 
 # ─────────────────────────────────────────────
 # Rep Counter State (shared between agent + HTTP)

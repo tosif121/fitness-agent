@@ -194,41 +194,56 @@ class DeterministicFitnessProcessor(ultralytics.YOLOPoseProcessor):
                         l_knee, r_knee = kpts[13], kpts[14]
 
                         # Averaged Y positions (lower Y = higher on screen)
-                        avg_hip_y = (l_hip[1] + r_hip[1]) / 2 if l_hip[2]>0.5 and r_hip[2]>0.5 else None
-                        avg_knee_y = (l_knee[1] + r_knee[1]) / 2 if l_knee[2]>0.5 and r_knee[2]>0.5 else None
-                        avg_wrist_y = (l_wrist[1] + r_wrist[1]) / 2 if l_wrist[2]>0.5 and r_wrist[2]>0.5 else None
-                        avg_shoulder_y = (l_shoulder[1] + r_shoulder[1]) / 2 if l_shoulder[2]>0.5 and r_shoulder[2]>0.5 else None
+                        # We use max(confidence) to fallback if one side isn't visible
+                        hip_ys = [k[1] for k in (l_hip, r_hip) if k[2] > 0.4]
+                        avg_hip_y = sum(hip_ys)/len(hip_ys) if hip_ys else None
+                        
+                        knee_ys = [k[1] for k in (l_knee, r_knee) if k[2] > 0.4]
+                        avg_knee_y = sum(knee_ys)/len(knee_ys) if knee_ys else None
+                        
+                        wrist_ys = [k[1] for k in (l_wrist, r_wrist) if k[2] > 0.4]
+                        avg_wrist_y = sum(wrist_ys)/len(wrist_ys) if wrist_ys else None
+                        
+                        shoulder_ys = [k[1] for k in (l_shoulder, r_shoulder) if k[2] > 0.4]
+                        avg_shoulder_y = sum(shoulder_ys)/len(shoulder_ys) if shoulder_ys else None
+
+                        # Only process one heuristic per frame to avoid rapid thrashing
+                        rep_triggered = False
 
                         # --- DETECT SQUATS ---
                         if avg_hip_y and avg_knee_y:
-                            # If hips go close to or below knees
-                            if avg_hip_y > avg_knee_y - 30: 
+                            # Hips go down near knees (easier threshold: 40px)
+                            if avg_hip_y > avg_knee_y - 40: 
                                 self.squat_state = "DOWN"
-                            # If hips go way above knees (standing)
-                            elif avg_hip_y < avg_knee_y - 120 and self.squat_state == "DOWN":
+                            # Hips go up away from knees (shorter threshold: 80px instead of 120px)
+                            elif avg_hip_y < avg_knee_y - 80 and self.squat_state == "DOWN":
                                 self.squat_state = "UP"
                                 count_rep("squats", "good", "Great depth on that squat!")
+                                rep_triggered = True
 
                         # --- DETECT JUMPING JACKS ---
-                        if avg_wrist_y and nose[2]>0.5:
+                        if not rep_triggered and avg_wrist_y and nose[2]>0.4:
                             # Wrists go above nose
                             if avg_wrist_y < nose[1]:
                                 self.jack_state = "UP"
-                            # Wrists go down near hips
-                            elif avg_hip_y and avg_wrist_y > avg_hip_y - 50 and self.jack_state == "UP":
+                            # Wrists go down near hips (or far below nose)
+                            elif avg_hip_y and avg_wrist_y > avg_hip_y - 60 and self.jack_state == "UP":
                                 self.jack_state = "DOWN"
                                 count_rep("jumping_jacks", "good", "Awesome jumping jack!")
+                                rep_triggered = True
 
                         # --- DETECT PUSH-UPS ---
-                        # In a pushup, shoulders drop severely relative to wrists (if camera is grounded)
-                        if avg_shoulder_y and avg_wrist_y:
-                            # Shoulders go down (close to wrists)
-                            if abs(avg_shoulder_y - avg_wrist_y) < 60:
+                        # Shoulders drop severely relative to wrists
+                        if not rep_triggered and avg_shoulder_y and avg_wrist_y:
+                            dist = abs(avg_shoulder_y - avg_wrist_y)
+                            # Down: shoulders are close to wrists (lowered to 70px)
+                            if dist < 70:
                                 self.pushup_state = "DOWN"
-                            # Shoulders go up (arms extended)
-                            elif abs(avg_shoulder_y - avg_wrist_y) > 150 and self.pushup_state == "DOWN":
+                            # Up: arms extended (lowered threshold from 150 to 90 for smaller screens)
+                            elif dist > 90 and self.pushup_state == "DOWN":
                                 self.pushup_state = "UP"
                                 count_rep("push_ups", "good", "Perfect push-up!")
+                                rep_triggered = True
                     except Exception as e:
                         logger.error(f"Heuristic error: {e}")
 

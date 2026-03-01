@@ -441,10 +441,17 @@ function ExerciseSelector({
                     : 'bg-bg3 border-transparent hover:border-border'
               }`}
               onClick={() => {
-                if (!isSelected) {
+                if (isActive) {
+                  // If it's actively showing, click to deselect
                   onToggleExercise(ex.id);
+                } else if (!isSelected) {
+                  // If it's not selected, click to select & activate
+                  onToggleExercise(ex.id);
+                  onSetActive(ex.id);
+                } else {
+                  // If it's selected but not active, click to activate
+                  onSetActive(ex.id);
                 }
-                onSetActive(ex.id);
               }}
             >
               <span className="text-lg shrink-0">{ex.icon}</span>

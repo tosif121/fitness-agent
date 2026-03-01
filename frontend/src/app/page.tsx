@@ -7,9 +7,8 @@ import {
   StreamCall,
   SpeakerLayout,
   useCallStateHooks,
-  useCall,
 } from '@stream-io/video-react-sdk';
-import { Mic, MicOff, Video, VideoOff, MonitorUp, Settings, PhoneOff, ScreenShare, ScreenShareOff } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, Settings, PhoneOff, ScreenShare, ScreenShareOff } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────
    FitAgent — Real-Time AI Fitness Coach
@@ -385,111 +384,6 @@ function RepCounterHUD({
   );
 }
 
-// ── Exercise Selector (sidebar panel) ─────────────────────
-function ExerciseSelector({
-  selectedExercises,
-  activeExerciseId,
-  trackers,
-  isSelectionApplied,
-  onApplySelection,
-  onToggleExercise,
-  onSetActive,
-}: {
-  selectedExercises: string[];
-  activeExerciseId: string | null;
-  trackers: Map<string, ExerciseTracker>;
-  isSelectionApplied: boolean;
-  onApplySelection: () => void;
-  onToggleExercise: (id: string) => void;
-  onSetActive: (id: string) => void;
-}) {
-  return (
-    <div className="rounded-xl p-4 bg-bg2 border border-border flex flex-col">
-      <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-text-dim">SELECT EXERCISES</p>
-      <div className="flex flex-col gap-1.5 max-h-[240px] overflow-y-auto mb-4">
-        {EXERCISE_CATALOG.map((ex) => {
-          const isSelected = selectedExercises.includes(ex.id);
-          const isActive = activeExerciseId === ex.id;
-          const tracker = trackers.get(ex.id);
-          return (
-            <div
-              key={ex.id}
-              className={`flex items-center gap-2.5 rounded-lg p-2.5 cursor-pointer transition-all duration-200 border ${
-                isActive
-                  ? 'bg-neon/10 border-neon/50'
-                  : isSelected
-                    ? 'bg-bg3 border-neon/20'
-                    : 'bg-bg3 border-transparent hover:border-border'
-              }`}
-              onClick={() => {
-                if (isActive) {
-                  // If it's actively showing, click to deselect
-                  onToggleExercise(ex.id);
-                } else if (!isSelected) {
-                  // If it's not selected, click to select & activate
-                  onToggleExercise(ex.id);
-                  onSetActive(ex.id);
-                } else {
-                  // If it's selected but not active, click to activate
-                  onSetActive(ex.id);
-                }
-              }}
-            >
-              <span className="text-lg shrink-0">{ex.icon}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`font-mono text-[11px] font-bold ${isActive ? 'text-neon' : isSelected ? 'text-text-bright' : 'text-text-dim'}`}
-                  >
-                    {ex.name}
-                  </span>
-                  {tracker && tracker.reps > 0 && (
-                    <span className="font-mono text-[10px] text-neon">
-                      {tracker.reps}r · {tracker.sets}s
-                    </span>
-                  )}
-                </div>
-                <span className="font-mono text-[9px] text-text-dim">{ex.targetReps} reps target</span>
-              </div>
-              <div
-                className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                  isSelected ? 'border-neon bg-neon/20' : 'border-border'
-                }`}
-              >
-                {isSelected && <span className="text-neon text-[10px]">✓</span>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Applied mode indicator / Apply button */}
-      <div>
-        {selectedExercises.length > 0 ? (
-          isSelectionApplied ? (
-            <div className="w-full rounded p-2.5 text-center text-[10px] font-mono border border-neon/50 text-neon bg-neon/10 leading-relaxed uppercase">
-              ✅ Applied <br />
-              <span className="text-neon/80 text-[9px]">Only Auto-Detecting Selected</span>
-            </div>
-          ) : (
-            <button
-              onClick={onApplySelection}
-              className="w-full rounded bg-neon/20 border border-neon text-neon font-bold text-[11px] font-mono tracking-widest py-2.5 hover:bg-neon hover:text-black transition-colors"
-            >
-              APPLY SELECTION
-            </button>
-          )
-        ) : (
-          <div className="w-full rounded p-2.5 text-center text-[10px] font-mono border border-border text-text-dim bg-bg3 leading-relaxed uppercase">
-            Default Mode <br />
-            <span className="text-text-dim/60 text-[9px]">Auto-Detecting ALL</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ── Exercise Countdown Overlay ────────────────────────────────
 function ExerciseCountdown({
   exercise,
@@ -509,7 +403,8 @@ function ExerciseCountdown({
         const timer = setTimeout(() => setCount(count - 1), 1000);
         return () => clearTimeout(timer);
       } else {
-        setPhase('go');
+        const timer = setTimeout(() => setPhase('go'), 0);
+        return () => clearTimeout(timer);
       }
     } else {
       const timer = setTimeout(onComplete, 1000);
@@ -571,19 +466,14 @@ function WorkoutView({
   onEndSession,
   callId,
   sessionStart,
-  selectedExercises,
   activeExerciseId,
   trackers,
-  onToggleExercise,
-  onSetActiveExercise,
   onAddRep,
   onRemoveRep,
   onNextSet,
   countdownExercise,
   onCountdownComplete,
   onCountdownCancel,
-  isSelectionApplied,
-  onApplySelection,
 }: {
   agentState: AgentState;
   feedback: string;
@@ -591,19 +481,14 @@ function WorkoutView({
   onEndSession: () => void;
   callId: string;
   sessionStart: number;
-  selectedExercises: string[];
   activeExerciseId: string | null;
   trackers: Map<string, ExerciseTracker>;
-  onToggleExercise: (id: string) => void;
-  onSetActiveExercise: (id: string) => void;
   onAddRep: () => void;
   onRemoveRep: () => void;
   onNextSet: () => void;
   countdownExercise: ExerciseInfo | null;
   onCountdownComplete: () => void;
   onCountdownCancel: () => void;
-  isSelectionApplied: boolean;
-  onApplySelection: () => void;
 }) {
   const activeTracker = activeExerciseId ? trackers.get(activeExerciseId) : null;
 
@@ -719,23 +604,8 @@ function WorkoutView({
                 <span className="font-mono text-[11px] text-text-dim">Duration</span>
                 <SessionTimer startTime={sessionStart} />
               </div>
-              <div className="flex justify-between items-center">
-                <span className="font-mono text-[11px] text-text-dim">Exercises</span>
-                <span className="font-mono text-[11px] text-neon">{selectedExercises.length} selected</span>
-              </div>
             </div>
           </div>
-
-          {/* Exercise Selector */}
-          <ExerciseSelector
-            selectedExercises={selectedExercises}
-            activeExerciseId={activeExerciseId}
-            trackers={trackers}
-            isSelectionApplied={isSelectionApplied}
-            onApplySelection={onApplySelection}
-            onToggleExercise={onToggleExercise}
-            onSetActive={onSetActiveExercise}
-          />
 
           {/* Agent Status */}
           <AgentStatusPanel agentState={agentState} />
@@ -844,12 +714,10 @@ export default function App() {
   const feedbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Exercise tracking state
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
   const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
   const [trackers, setTrackers] = useState<Map<string, ExerciseTracker>>(new Map());
   const [countdownExercise, setCountdownExercise] = useState<ExerciseInfo | null>(null);
   const [pendingExerciseId, setPendingExerciseId] = useState<string | null>(null);
-  const [isSelectionApplied, setIsSelectionApplied] = useState(false);
 
   const showFeedback = useCallback((msg: string) => {
     setFeedback(msg);
@@ -859,77 +727,16 @@ export default function App() {
 
   // Reset all session data for a fresh start
   const resetSession = useCallback(() => {
-    setSelectedExercises([]);
     setActiveExerciseId(null);
     setTrackers(new Map());
     setSummary(null);
     setAgentState('idle');
     setCountdownExercise(null);
     setPendingExerciseId(null);
-    setIsSelectionApplied(false);
     setFeedback('');
     setCallId('');
     setSessionStart(0);
   }, []);
-
-  const handleToggleExercise = useCallback(
-    (exerciseId: string) => {
-      setSelectedExercises((prev) => {
-        if (prev.includes(exerciseId)) {
-          // Deselect: remove tracker too
-          setTrackers((t) => {
-            const next = new Map(t);
-            next.delete(exerciseId);
-            return next;
-          });
-          if (activeExerciseId === exerciseId) setActiveExerciseId(null);
-          const newPrev = prev.filter((id) => id !== exerciseId);
-          if (newPrev.length === 0) setIsSelectionApplied(false);
-          return newPrev;
-        }
-        // Select: create tracker
-        const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId)!;
-        setTrackers((t) => {
-          const next = new Map(t);
-          if (!next.has(exerciseId)) {
-            next.set(exerciseId, { exercise: info, reps: 0, sets: 1, formScore: 0, startedAt: Date.now() });
-          }
-          return next;
-        });
-        return [...prev, exerciseId];
-      });
-    },
-    [activeExerciseId],
-  );
-
-  const handleSetActiveExercise = useCallback(
-    (exerciseId: string) => {
-      // If already active, skip countdown
-      if (activeExerciseId === exerciseId) return;
-
-      // Ensure it's selected first
-      setSelectedExercises((prev) => {
-        if (!prev.includes(exerciseId)) {
-          const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId)!;
-          setTrackers((t) => {
-            const next = new Map(t);
-            if (!next.has(exerciseId)) {
-              next.set(exerciseId, { exercise: info, reps: 0, sets: 1, formScore: 0, startedAt: Date.now() });
-            }
-            return next;
-          });
-          return [...prev, exerciseId];
-        }
-        return prev;
-      });
-
-      // Start countdown
-      const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId)!;
-      setPendingExerciseId(exerciseId);
-      setCountdownExercise(info);
-    },
-    [activeExerciseId],
-  );
 
   const handleCountdownComplete = useCallback(() => {
     if (pendingExerciseId) {
@@ -1154,11 +961,6 @@ export default function App() {
               }
             } else if (data.reps > 0 || data.sets > 1) {
               // Auto-detect: if AI detects an exercise we never selected!
-              if (isSelectionApplied) {
-                // If the user locked their selections, ignore unselected exercises!
-                return prev;
-              }
-
               const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId);
               if (info) {
                 next.set(exerciseId, {
@@ -1169,8 +971,7 @@ export default function App() {
                   startedAt: Date.now(),
                 });
 
-                // Auto-select and auto-activate
-                setSelectedExercises((prevSel) => (prevSel.includes(exerciseId) ? prevSel : [...prevSel, exerciseId]));
+                // Auto-activate the newly detected exercise
                 setActiveExerciseId(exerciseId);
 
                 // Show detection feedback
@@ -1182,7 +983,7 @@ export default function App() {
             return prev;
           });
         }
-      } catch (e) {
+      } catch {
         // Silently ignore connection errors during polling
       }
     };
@@ -1193,7 +994,7 @@ export default function App() {
       mounted = false;
       clearInterval(intervalId);
     };
-  }, [agentState, callId, showFeedback, isSelectionApplied]);
+  }, [agentState, callId, showFeedback]);
 
   useEffect(
     () => () => {
@@ -1230,19 +1031,14 @@ export default function App() {
           onEndSession={handleEndSession}
           callId={callId}
           sessionStart={sessionStart}
-          selectedExercises={selectedExercises}
           activeExerciseId={activeExerciseId}
           trackers={trackers}
-          onToggleExercise={handleToggleExercise}
-          onSetActiveExercise={handleSetActiveExercise}
           onAddRep={handleAddRep}
           onRemoveRep={handleRemoveRep}
           onNextSet={handleNextSet}
           countdownExercise={countdownExercise}
           onCountdownComplete={handleCountdownComplete}
           onCountdownCancel={handleCountdownCancel}
-          isSelectionApplied={isSelectionApplied}
-          onApplySelection={() => setIsSelectionApplied(true)}
         />
       </StreamCall>
     </StreamVideo>

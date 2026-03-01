@@ -458,6 +458,78 @@ function ExerciseCountdown({
   );
 }
 
+// ── Tracked Exercises Panel (Right Sidebar) ───────────────────
+function TrackedExercisesPanel({
+  trackers,
+  activeExerciseId,
+  onSetActive,
+}: {
+  trackers: Map<string, ExerciseTracker>;
+  activeExerciseId: string | null;
+  onSetActive: (id: string) => void;
+}) {
+  const trackersList = Array.from(trackers.values()).sort((a, b) => b.startedAt - a.startedAt);
+
+  return (
+    <div className="rounded-xl p-4 bg-bg2 border border-border flex flex-col">
+      <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-text-dim">TRACKED EXERCISES</p>
+      {trackersList.length === 0 ? (
+        <div className="w-full rounded p-3 text-center text-[10px] font-mono border border-border text-text-dim bg-bg3 leading-relaxed">
+          Waiting for AI to detect an exercise...
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1.5 max-h-[300px] overflow-y-auto pr-1">
+          {trackersList.map((tracker) => {
+            const isActive = tracker.exercise.id === activeExerciseId;
+            return (
+              <div
+                key={tracker.exercise.id}
+                onClick={() => onSetActive(tracker.exercise.id)}
+                className={`flex flex-col gap-1 rounded-lg p-2.5 cursor-pointer transition-all duration-200 border ${
+                  isActive
+                    ? 'bg-neon/10 border-neon/50'
+                    : 'bg-bg3 border-border/50 hover:border-neon/30 hover:bg-bg3/80'
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm shrink-0">{tracker.exercise.icon}</span>
+                    <span
+                      className={`font-mono text-[11px] font-bold ${
+                        isActive ? 'text-neon drop-shadow-[0_0_8px_rgba(0,255,135,0.4)]' : 'text-text-bright'
+                      }`}
+                    >
+                      {tracker.exercise.name.toUpperCase()}
+                    </span>
+                  </div>
+                  {isActive && <div className="w-1.5 h-1.5 rounded-full bg-neon animate-pulse" />}
+                </div>
+
+                <div className="flex items-center justify-between pl-6 mt-0.5">
+                  <div className="font-mono text-[10px] text-text-dim">
+                    <span className={isActive ? 'text-neon font-bold' : ''}>{tracker.reps}</span>
+                    <span className="opacity-70">/{tracker.exercise.targetReps} reps</span>
+                    <span className="mx-1.5 opacity-30">|</span>
+                    <span className={isActive ? 'text-neon font-bold' : ''}>{tracker.sets}</span>
+                    <span className="opacity-70"> sets</span>
+                  </div>
+                  <div
+                    className={`font-mono text-[10px] font-bold ${
+                      tracker.formScore >= 80 ? 'text-neon' : tracker.formScore >= 60 ? 'text-yellow' : 'text-red'
+                    }`}
+                  >
+                    {tracker.formScore}% form
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Workout Screen (inside StreamCall) ────────────────────
 function WorkoutView({
   agentState,
@@ -471,6 +543,7 @@ function WorkoutView({
   onAddRep,
   onRemoveRep,
   onNextSet,
+  onSetActiveExercise,
   countdownExercise,
   onCountdownComplete,
   onCountdownCancel,
@@ -486,6 +559,7 @@ function WorkoutView({
   onAddRep: () => void;
   onRemoveRep: () => void;
   onNextSet: () => void;
+  onSetActiveExercise: (id: string) => void;
   countdownExercise: ExerciseInfo | null;
   onCountdownComplete: () => void;
   onCountdownCancel: () => void;
@@ -605,8 +679,13 @@ function WorkoutView({
                 <SessionTimer startTime={sessionStart} />
               </div>
             </div>
-          </div>
-
+          </div>{' '}
+          {/* Tracked Exercises Sidebar */}
+          <TrackedExercisesPanel
+            trackers={trackers}
+            activeExerciseId={activeExerciseId}
+            onSetActive={onSetActiveExercise}
+          />
           {/* Agent Status */}
           <AgentStatusPanel agentState={agentState} />
         </div>
@@ -737,6 +816,19 @@ export default function App() {
     setCallId('');
     setSessionStart(0);
   }, []);
+
+  const handleSetActiveExercise = useCallback(
+    (exerciseId: string) => {
+      if (activeExerciseId === exerciseId) return;
+
+      const info = EXERCISE_CATALOG.find((e) => e.id === exerciseId);
+      if (info) {
+        setPendingExerciseId(exerciseId);
+        setCountdownExercise(info);
+      }
+    },
+    [activeExerciseId],
+  );
 
   const handleCountdownComplete = useCallback(() => {
     if (pendingExerciseId) {
@@ -1036,6 +1128,7 @@ export default function App() {
           onAddRep={handleAddRep}
           onRemoveRep={handleRemoveRep}
           onNextSet={handleNextSet}
+          onSetActiveExercise={handleSetActiveExercise}
           countdownExercise={countdownExercise}
           onCountdownComplete={handleCountdownComplete}
           onCountdownCancel={handleCountdownCancel}

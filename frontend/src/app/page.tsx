@@ -54,25 +54,6 @@ interface SessionSummary {
 
 const EXERCISE_CATALOG: ExerciseInfo[] = [
   { id: 'squats', name: 'Squats', icon: '🦵', targetReps: 12, tips: 'Keep knees tracking over toes, chest up.' },
-  { id: 'pushups', name: 'Push-Ups', icon: '💪', targetReps: 15, tips: 'Lower chest close to ground, full ROM.' },
-  { id: 'lunges', name: 'Lunges', icon: '🏃', targetReps: 10, tips: 'Maintain upright torso, 90° knee angle.' },
-  {
-    id: 'jumping_jacks',
-    name: 'Jumping Jacks',
-    icon: '🤸',
-    targetReps: 20,
-    tips: 'Full extension, keep a steady tempo.',
-  },
-  { id: 'plank', name: 'Plank Hold', icon: '🧘', targetReps: 30, tips: 'Keep hips level, engage core throughout.' },
-  { id: 'burpees', name: 'Burpees', icon: '🔥', targetReps: 8, tips: 'Explosive jump, chest to floor each rep.' },
-  {
-    id: 'mountain_climbers',
-    name: 'Mountain Climbers',
-    icon: '⛰️',
-    targetReps: 20,
-    tips: 'Keep hips low, alternate knees to chest.',
-  },
-  { id: 'bicep_curls', name: 'Bicep Curls', icon: '🏋️', targetReps: 12, tips: 'Control the negative, no swinging.' },
 ];
 
 const FEATURES = [

@@ -1144,24 +1144,6 @@ export default function App() {
         if (data && data.exercise) {
           const exerciseId = data.exercise.replace('_', '-');
 
-          // Strict Filter: If selection is applied, IGNORE any data for unselected exercises!
-          if (isSelectionApplied) {
-            setSelectedExercises((currentSelected) => {
-              if (!currentSelected.includes(exerciseId)) {
-                return currentSelected; // don't update state
-              }
-              // It IS selected, proceed
-              return currentSelected;
-            });
-
-            // Note: Since set state is async, we can just do a dirty read of the DOM state or
-            // wait for the next render. But a better way is to check the `trackers` Map since
-            // `trackers` contains exactly the selected exercises when applied.
-            if (!trackers.has(exerciseId)) {
-              return; // Skip this poll entirely if we don't track it!
-            }
-          }
-
           setTrackers((prev) => {
             const next = new Map(prev);
             const currentTracker = next.get(exerciseId);
@@ -1230,7 +1212,7 @@ export default function App() {
       mounted = false;
       clearInterval(intervalId);
     };
-  }, [agentState, callId, showFeedback, isSelectionApplied, trackers]);
+  }, [agentState, callId, showFeedback, isSelectionApplied]);
 
   useEffect(
     () => () => {

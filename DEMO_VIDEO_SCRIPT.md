@@ -41,54 +41,44 @@ _[Screen: Show the architecture diagram briefly, then cut to the skeleton overla
 
 ### [0:45 – 1:05] LIVE DEMO — Auto Detection
 
-> Let me show you how it works.
-> I haven't selected any exercise yet. The system is in default mode, auto-detecting everything.
-> Watch what happens when I start doing squats.
+### [0:45 – 1:15] LIVE DEMO — Squat Tracking
+
+> Let me show you how it works with a simple exercise: Squats.
+> Watch what happens when I start my first set.
 
 _[Screen: User stands in front of camera. Starts doing squats. The HUD lights up — "AI found you doing Squats!" — rep counter starts ticking: 1, 2, 3...]_
 
-> The AI instantly recognized squats, created a tracker, and started counting. No buttons pressed. No setup needed.
+> The AI instantly recognizes the movement, creates a tracker, and starts counting my reps. No buttons pressed. No manual data entry.
+> It's analyzing the angle of my hips relative to my knees in real time to ensure I hit proper depth.
 
 ---
 
-### [1:05 – 1:25] LIVE DEMO — Selected Mode
-
-> But what if you want a structured workout?
-> I can select specific exercises from the sidebar. Push-ups and jumping jacks.
-> Now I hit "Apply Selection."
-
-_[Screen: User clicks exercises in sidebar, clicks "Apply Selection" button. UI shows "Applied — Only Auto-Detecting Selected"]_
-
-> Now the system only tracks the exercises I chose. Even if I do squats, it won't count them. It stays focused on my plan.
-
----
-
-### [1:25 – 1:40] LIVE DEMO — Voice Coaching
+### [1:15 – 1:35] LIVE DEMO — Voice Coaching
 
 > And here's where it gets really cool.
 > The AI coach isn't just counting. It's watching my form and speaking to me in real time.
 
-_[Screen: User does a few push-ups. Gemini voice says something like "Great depth! Keep your core tight." The feedback toast appears on the HUD]_
+_[Screen: User does a few more squats. Gemini voice says something like "Great depth! Keep your chest up." The feedback toast appears on the HUD]_
 
-> It corrects my posture, motivates me, and even tracks my form score. All through natural voice conversation.
+> It corrects my posture, motivates me, and assigns a live form score. All through natural voice conversation. It's like having a trainer right in the room.
 
 ---
 
-### [1:40 – 1:55] SESSION SUMMARY
+### [1:35 – 1:50] SESSION SUMMARY
 
 > When I'm done, I hit "End Session," and FitAgent gives me a full workout summary.
-> Total duration, reps per exercise, sets completed, and an overall form score.
+> Total duration, total squats completed, sets, and an overall form score based on my performance.
 
 _[Screen: Summary modal appears with the neon-styled stats breakdown]_
 
-> It's like having a personal trainer review your entire session.
+> It's an instant review of my entire session, beautifully summarized.
 
 ---
 
-### [1:55 – 2:10] CLOSING — The Vision
+### [1:50 – 2:10] CLOSING — The Vision
 
 > FitAgent was built for the Vision Possible hackathon using the Stream Vision Agents SDK, Google Gemini, and YOLO eleven.
-> It proves that real-time computer vision isn't just about seeing pixels. It's about understanding movement, coaching humans, and making fitness accessible to everyone.
+> It proves that real-time computer vision isn't just about seeing pixels. It's about understanding human movement, providing instant coaching, and making fitness accessible to everyone.
 > This is FitAgent. Your AI coach is ready. Are you?
 
 _[Screen: FitAgent logo with tagline. GitHub link, blog post link, and hackathon badge displayed]_

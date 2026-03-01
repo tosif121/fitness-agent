@@ -12,9 +12,7 @@
 
 ## 📽️ Demo Video
 
-[![FitAgent Demo](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-FF0000?style=flat-square&logo=youtube)](https://youtube.com/YOUR_DEMO_LINK)
-
-> _Replace this link with your actual demo video before submission_
+[![FitAgent Demo](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-FF0000?style=flat-square&logo=youtube)](https://youtu.com/Qhh599Jw0Kk)
 
 ---
 
@@ -22,8 +20,8 @@
 
 | Resource       | Link                                                                                                                              |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 🐙 GitHub Repo | [github.com/YOUR_USERNAME/fitagent](https://github.com/YOUR_USERNAME/fitagent)                                                    |
-| 🎥 Demo Video  | [youtube.com/watch?v=YOUR_ID](https://youtube.com/YOUR_DEMO_LINK)                                                                 |
+| 🐙 GitHub Repo | [github.com/tosif121/fitness-agent](https://github.com/tosif121/fitness-agent)                                                    |
+| 🎥 Demo Video  | [youtube.com/watch?v=Qhh599Jw0Kk](https://youtu.com/Qhh599Jw0Kk)                                                                  |
 | 📝 Blog Post   | [Hashnode Article](https://tossi.hashnode.dev/building-fitagent-a-real-time-ai-personal-trainer-with-stream-vision-agents-gemini) |
 | 🌐 Live Demo   | [fitagent.vercel.app](https://fitagent.vercel.app) _(optional)_                                                                   |
 | 🐦 Twitter/X   | [@YOUR_HANDLE](https://x.com/YOUR_HANDLE)                                                                                         |

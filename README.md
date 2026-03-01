@@ -207,10 +207,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 1. Enter a **Session ID** (or leave blank to auto-generate)
 2. Click **START TRAINING**
-3. Select your exercises from the sidebar.
-4. Click **SUMMON AI COACH**
-5. Allow camera + microphone access
-6. Get into position — FitAgent will log your reps and Gemini will coach you!
+3. Click **SUMMON AI COACH**
+4. Allow camera + microphone access
+5. Get into position — FitAgent will auto-detect your exercise, log your reps, and Gemini will coach you!
 
 ---
 
@@ -221,12 +220,11 @@ fitness-agent/
 ├── main.py                 # Full Python backend: Agent + Physics Engine + HTTP
 ├── fitness_coach.md        # AI System Prompt: form rules, voice style
 ├── pyproject.toml          # Python dependencies (uv)
-├── BLOG_POST.md            # Hackathon story and architecture deep-dive
 ├── DEMO_VIDEO_SCRIPT.md    # Script for the final hackathon submission video
 │
 └── frontend/
     ├── src/app/
-    │   ├── page.tsx        # Next.js UI: Call layout + HUD + Exercise Selector
+    │   ├── page.tsx        # Next.js UI: Call layout + HUD + Tracked Exercises Sidebar
     │   ├── layout.tsx
     │   └── globals.css     # Design system and animations
     ├── package.json

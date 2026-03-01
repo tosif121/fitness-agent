@@ -39,20 +39,15 @@ _[Screen: Show the architecture diagram briefly, then cut to the skeleton overla
 
 ---
 
-### [0:45 – 1:15] LIVE DEMO — Auto-Detection & Voice Commands
+### [0:45 – 1:15] LIVE DEMO — Squat Tracking
 
-> Let me show you how it works. You don't need to press any buttons to select an exercise.
-> I'll just step back and start my first set of squats.
+> Let me show you how it works with a simple exercise: Squats.
+> Watch what happens when I start my first set.
 
 _[Screen: User stands in front of camera. Starts doing squats. The HUD lights up — "AI found you doing Squats!" — rep counter starts ticking: 1, 2, 3...]_
 
-> The AI instantly recognizes the movement, creates a tracker, and starts counting my reps.
-> But what if I want to switch it up? I can just tell my coach what I'm doing.
-> "Hey coach, I'm switching to push-ups."
-
-_[Screen: User gets into push-up position. The HUD instantly swaps from Squats to Push-Ups. User starts repping push-ups]_
-
-> Or even better... I can just start doing push-ups, and the vision model will auto-detect the new pose immediately.
+> The AI instantly recognizes the movement, creates a tracker, and starts counting my reps. No buttons pressed. No manual data entry.
+> It's analyzing the angle of my hips relative to my knees in real time to ensure I hit proper depth.
 
 ---
 
@@ -61,7 +56,7 @@ _[Screen: User gets into push-up position. The HUD instantly swaps from Squats t
 > And here's where it gets really cool.
 > The AI coach isn't just counting. It's watching my form and speaking to me in real time.
 
-_[Screen: User does a few more push-ups. Gemini voice says something like "Great depth! Keep your core tight." The feedback toast appears on the HUD]_
+_[Screen: User does a few more squats. Gemini voice says something like "Great depth! Keep your chest up." The feedback toast appears on the HUD]_
 
 > It corrects my posture, motivates me, and assigns a live form score. All through natural voice conversation. It's like having a trainer right in the room.
 
@@ -70,9 +65,9 @@ _[Screen: User does a few more push-ups. Gemini voice says something like "Great
 ### [1:35 – 1:50] SESSION SUMMARY
 
 > When I'm done, I hit "End Session," and FitAgent gives me a full workout summary.
-> Total duration, the breakdown of every exercise, sets completed, and an overall form score based on my performance.
+> Total duration, total squats completed, sets, and an overall form score based on my performance.
 
-_[Screen: Summary modal appears with the neon-styled stats breakdown showing both Squats and Push-ups]_
+_[Screen: Summary modal appears with the neon-styled stats breakdown]_
 
 > It's an instant review of my entire session, beautifully summarized.
 

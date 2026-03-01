@@ -74,26 +74,24 @@ No gym equipment needed. No app to install. Just your camera and your body.
            │                          │
            ▼                          ▼
 ┌──────────────────┐      ┌───────────────────────────────┐
-│  YOLOPoseProcessor│      │        Gemini Realtime         │
-│  (17 keypoints)  │      │  (STT + LLM + TTS native)     │
-└────────┬─────────┘      └───────────────────────────────┘
-         │
-         ▼
-┌──────────────────┐
-│ RepCounterProcessor│
-│ - Detect exercise │
-│ - Count reps      │
-│ - Detect errors   │
-│ - Track sets      │
+│YOLOPoseProcessor │      │        Gemini Realtime         │
+│(17 keypoints)    │      │  (STT + LLM + TTS native)     │
+└────────┬─────────┘      └───────────────┬───────────────┘
+         │                                │
+         ▼                                ▼
+┌──────────────────┐      ┌───────────────────────────────┐
+│ Deterministic    │      │         Tool Calling           │
+│ Physics Engine   │◄─────┤      (count_rep, next_set)      │
+│ (Rep Heuristics) │      └───────────────────────────────┘
 └────────┬─────────┘
-         │ Structured state
+         │ HTTP Polling (Port 8001)
          ▼
 ┌──────────────────┐
-│  React Frontend  │
-│ - Skeleton overlay│
-│ - Live rep counter│
-│ - Form score arc  │
-│ - Feedback toast  │
+│ Next.js Frontend │
+│ - Video Layout   │
+│ - Live rep card  │
+│ - Set tracking   │
+│ - Workout Summary│
 └──────────────────┘
 ```
 
@@ -106,8 +104,8 @@ No gym equipment needed. No app to install. Just your camera and your body.
 | Video Transport | [Stream Vision Agents](https://visionagents.ai)       |
 | Pose Detection  | [YOLO11n-pose](https://ultralytics.com) (Ultralytics) |
 | LLM + Voice     | [Gemini Realtime API](https://deepmind.google/gemini) |
-| Frontend        | React + Tailwind CSS                                  |
-| Backend         | Python 3.12 + uv                                      |
+| Frontend        | Next.js + React + Tailwind CSS v4                     |
+| Backend         | Python 3.12 + FastAPI / HTTP Server                   |
 | Package Manager | [uv](https://astral.sh/uv)                            |
 
 ---
@@ -117,7 +115,7 @@ No gym equipment needed. No app to install. Just your camera and your body.
 Before you begin, make sure you have:
 
 - **Python 3.12+** with CPython installed
-- **Node.js 18+** (for React frontend)
+- **Node.js 18+** (for Next.js frontend)
 - **uv** package manager
 - **Webcam** (built-in or USB)
 - API keys for: Stream, Gemini _(see below)_
@@ -129,8 +127,8 @@ Before you begin, make sure you have:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/fitagent.git
-cd fitagent
+git clone https://github.com/tosif121/fitness-agent.git
+cd fitness-agent
 ```
 
 ### 2. Install uv (if not already installed)
@@ -188,49 +186,51 @@ cd ..
 
 ## ▶️ Running FitAgent
 
-### Start the Backend Agent
+### Start the Backend Agent Server
 
 ```bash
-# Development mode — join with a specific call ID
-uv run python main.py run --call-id my-fitness-session
-
-# Production mode — run as HTTP server
 uv run python main.py serve
 ```
 
 ### Start the Frontend
+
+In a new terminal:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Connect to a Session
 
-1. Enter the same **Call ID** you used when starting the backend (`my-fitness-session`)
+1. Enter a **Session ID** (or leave blank to auto-generate)
 2. Click **START TRAINING**
-3. Allow camera + microphone access
-4. Get into position — FitAgent will greet you and start coaching!
+3. Select your exercises from the sidebar.
+4. Click **SUMMON AI COACH**
+5. Allow camera + microphone access
+6. Get into position — FitAgent will log your reps and Gemini will coach you!
 
 ---
 
 ## 📁 Project Structure
 
 ```
-fitagent/
-├── main.py                 # Agent entry point (backend)
-├── rep_counter.py          # Custom processor: rep counting + form detection
-├── fitness_coach.md        # AI instructions: form rules, voice style, exercises
-├── .env.example            # API key template
+fitness-agent/
+├── main.py                 # Full Python backend: Agent + Physics Engine + HTTP
+├── fitness_coach.md        # AI System Prompt: form rules, voice style
 ├── pyproject.toml          # Python dependencies (uv)
+├── BLOG_POST.md            # Hackathon story and architecture deep-dive
+├── DEMO_VIDEO_SCRIPT.md    # Script for the final hackathon submission video
 │
 └── frontend/
-    ├── src/
-    │   └── App.jsx         # React UI: skeleton overlay + HUD + rep counter
+    ├── src/app/
+    │   ├── page.tsx        # Next.js UI: Call layout + HUD + Exercise Selector
+    │   ├── layout.tsx
+    │   └── globals.css     # Design system and animations
     ├── package.json
-    └── vite.config.js
+    └── next.config.ts
 ```
 
 ---
